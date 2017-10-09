@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+: '
+	NAME: whowithme
+	DESCRIPTION: script to check who with you on local network is connected
+	AUTHOR: abdooalcrazy@gmail.com
+	LICENSE: MIT
+'
+
+# this is your Network interface
+interface=`ip link | awk '/state UP/ {print $2}' | sed s/://`
+
+# this is your local IP address to exclude & uncheck
+address=`ifconfig $interface | awk '/inet / {print $2}' | sed s/addr://g`
+
+# this is gateway
+gateway=`echo "$address" | sed -re 's/[0-9]+$/0\/24/g'`
+
+# Print IP addresses in network with Device name & OS uses
+nmap -O -n -T4 -PN --exclude "$address" "$gateway"
